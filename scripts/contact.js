@@ -44,3 +44,24 @@ form.addEventListener("submit", function (e) {
     });
 });
 
+// Mobile Navigation Toggle
+document.addEventListener("DOMContentLoaded", () => {
+  const menuToggle = document.getElementById("mobile-menu-toggle");
+  const navRight = document.querySelector("nav .right");
+  const navLinks = document.querySelectorAll("nav ul li a");
+
+  if (menuToggle && navRight) {
+    menuToggle.addEventListener("click", () => {
+      menuToggle.classList.toggle("active");
+      navRight.classList.toggle("active");
+    });
+
+    navLinks.forEach((link) => {
+      link.addEventListener("click", () => {
+        menuToggle.classList.remove("active");
+        navRight.classList.remove("active");
+      });
+    });
+  }
+});
+

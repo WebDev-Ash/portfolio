@@ -17,7 +17,7 @@
   let progress  = 0;
 
   const interval = setInterval(() => {
-    progress += Math.random() * 14 + 5;
+    progress += Math.random() * 12 + 4;
     if (progress >= 100) {
       progress = 100;
       clearInterval(interval);
@@ -35,10 +35,10 @@
           document.querySelectorAll('.reveal-left, .reveal-right').forEach(el => {
             el.classList.add('revealed');
           });
-        }, 250);
-      }, 480);
+        }, 300);
+      }, 600);
     }
-  }, 80);
+  }, 75);
 })();
 
 
@@ -60,53 +60,42 @@ document.addEventListener('DOMContentLoaded', () => {
 /* ─── 3. TRAILING CURSOR (desktop only) ──────────────────── */
 (function initTrailCursor() {
   const isTouch = window.matchMedia('(pointer: coarse)').matches;
-  if (isTouch) return; // skip on touch devices
+  if (isTouch) return;
 
   const container = document.getElementById('cursor-trail-container');
   if (!container) return;
 
-  const TRAIL_COUNT = 14;
+  const TRAIL_COUNT = 12;
   const trail = [];
 
-  // Create trail dots
   for (let i = 0; i < TRAIL_COUNT; i++) {
     const dot = document.createElement('div');
     dot.className = 'cursor-trail-dot';
-    // Scale and opacity decrease toward tail
-    const scale = 1 - (i / TRAIL_COUNT) * 0.72;
-    const alpha = 1 - (i / TRAIL_COUNT) * 0.85;
+    const size = 24 - i * 1.2;
+    const scale = 1 - (i / TRAIL_COUNT) * 0.4;
+    const opacity = 0.65 - i * 0.045;
     dot.style.cssText = `
-      width: ${8 - i * 0.35}px;
-      height: ${8 - i * 0.35}px;
-      opacity: ${alpha.toFixed(2)};
-      --scale: ${scale.toFixed(2)};
+      width: ${size}px;
+      height: ${size}px;
+      opacity: ${opacity};
+      --scale: ${scale};
     `;
     container.appendChild(dot);
     trail.push({ el: dot, x: 0, y: 0 });
   }
 
   let mouseX = 0, mouseY = 0;
-  let isHovering = false;
 
   document.addEventListener('mousemove', e => {
     mouseX = e.clientX;
     mouseY = e.clientY;
   });
 
-  // Detect hover over interactive elements
-  const hoverSel = 'a, button, input, textarea, .skill-box, .work__img, .menu-toggle, label';
-  document.querySelectorAll(hoverSel).forEach(el => {
-    el.addEventListener('mouseenter', () => { isHovering = true; });
-    el.addEventListener('mouseleave', () => { isHovering = false; });
-  });
-
-  // Click burst — all dots flash
   document.addEventListener('mousedown', () => {
     trail.forEach(t => t.el.classList.add('trail-click'));
     setTimeout(() => trail.forEach(t => t.el.classList.remove('trail-click')), 350);
   });
 
-  // Hide when leaving/entering window
   document.addEventListener('mouseleave', () => {
     container.style.opacity = '0';
   });
@@ -114,22 +103,19 @@ document.addEventListener('DOMContentLoaded', () => {
     container.style.opacity = '1';
   });
 
-  // Animate — each dot chases the one ahead of it
   function animate() {
-    // First dot chases mouse
-    trail[0].x += (mouseX - trail[0].x) * 0.38;
-    trail[0].y += (mouseY - trail[0].y) * 0.38;
+    trail[0].x += (mouseX - trail[0].x) * 0.45;
+    trail[0].y += (mouseY - trail[0].y) * 0.45;
 
-    // Each subsequent dot chases the previous
     for (let i = 1; i < trail.length; i++) {
-      const lag = 0.22 + i * 0.015;
-      trail[i].x += (trail[i - 1].x - trail[i].x) * lag;
-      trail[i].y += (trail[i - 1].y - trail[i].y) * lag;
+      trail[i].x += (trail[i-1].x - trail[i].x) * (0.35 - i * 0.015);
+      trail[i].y += (trail[i-1].y - trail[i].y) * (0.35 - i * 0.015);
     }
 
     trail.forEach((t, i) => {
-      const hw = (8 - i * 0.35) / 2;
-      t.el.style.transform = `translate(${t.x - hw}px, ${t.y - hw}px) scale(${isHovering ? 1.6 : 1})`;
+      const size = 24 - i * 1.2;
+      const scale = 1 - (i / TRAIL_COUNT) * 0.4;
+      t.el.style.transform = `translate(${t.x - size/2}px, ${t.y - size/2}px) scale(${scale})`;
     });
 
     requestAnimationFrame(animate);

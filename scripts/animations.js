@@ -307,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const nameEl = document.querySelector('.white');
   if (!nameEl) return;
 
-  const walker    = document.createTreeWalker(nameEl, NodeFilter.SHOW_TEXT, null);
+  const walker = document.createTreeWalker(nameEl, NodeFilter.SHOW_TEXT, null);
   const textNodes = [];
   let node;
   while ((node = walker.nextNode())) {
@@ -315,15 +315,25 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   if (textNodes[0]) {
-    const txt  = textNodes[0].textContent;
+    const txt = textNodes[0].textContent;
     const frag = document.createDocumentFragment();
     [...txt].forEach((ch, i) => {
       const span = document.createElement('span');
-      span.className   = 'hero-letter';
+      span.className = 'hero-letter';
       span.textContent = ch === ' ' ? '\u00A0' : ch;
       span.style.animationDelay = `${0.8 + i * 0.06}s`;
       frag.appendChild(span);
     });
     textNodes[0].replaceWith(frag);
   }
+})();
+
+/* ─── 10. RESUME BUTTON CLICK HANDLER ─────────────────────── */
+(function initResumeButton() {
+  const resumeButton = document.getElementById('resume-button');
+  if (!resumeButton) return;
+
+  resumeButton.addEventListener('click', () => {
+    window.open('#', '_blank', 'noopener,noreferrer');
+  });
 })();
